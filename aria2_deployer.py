@@ -3,6 +3,8 @@ import sys
 import requests
 import stat
 import logging
+import toml
+
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
@@ -23,10 +25,10 @@ else:
 
 aria2c_path = os.path.join(PROGRAM_ROOT, "bin")
 aria2c_prog = os.path.join(aria2c_path, aria2c_name)
-
+config_path = os.path.join(PROGRAM_ROOT, "config.toml")
 
 # 检查 aria2c 是否存在，如果不存在则下载
-def check_aria2():
+def check_aria2c():
     if os.path.exists(aria2c_prog):
         logging.info("Aria2 program found.")
         return 0
@@ -63,10 +65,28 @@ def set_permissions():
             logging.error("Failed to set permissions: %s", str(e))
 
 
+def creat_config():
+    config_data = {
+        "aria2c": {
+            "rpc-listen-port": 6888
+        }
+    }
+    if os.path.exists(config_path):
+        logging.info("Configuration file already exists, skipping write: %s", config_path)
+    else:
+        try:
+            with open(config_path, "w") as f:
+                toml.dump(config_data, f)
+            logging.info("Configuration file successfully written: %s", config_path) 
+        except Exception as e:
+            logging.error("Failed to write configuration file: %s, Error: %s", config_path, e)
+
+
 def main():
-    if check_aria2() == 0:
+    if check_aria2c() == 0:
         set_permissions()
-        logging.info("Deployment complete, welcome to use PCAriaD.")
+        creat_config()
+        logging.info("Deployment complete, welcome to use PyAriaD.")
     else:
         logging.error(
             "Deployment failed, possibly due to network issues. Please check the return code."
