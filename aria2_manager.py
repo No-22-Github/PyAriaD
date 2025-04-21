@@ -2,7 +2,6 @@ import os
 import sys
 import logging
 import subprocess
-import toml
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
@@ -27,10 +26,9 @@ def start_aria2c():
     try:
         command = [
             aria2c_prog,
+            "--no-conf",
             "--enable-rpc",
-            "--rpc-listen-all=true",
-            "--rpc-allow-origin-all",
-            "--rpc-listen-port=6888",
+            "--rpc-listen-port=6800",
             "--daemon=true",
         ]
 
